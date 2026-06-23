@@ -1,1 +1,2 @@
 jump on ground
+deadzone

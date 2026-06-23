@@ -10,8 +10,9 @@ bounce = 0.8
 radius = 12.0
 
 [node name="Ball" type="RigidBody2D" unique_id=990425002]
-mass = 0.1
+mass = 0.2
 physics_material_override = SubResource("PhysicsMaterial_j5yw3")
+linear_damp = 0.1
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=770152038]
 texture = ExtResource("1_7nh6h")

@@ -12,8 +12,6 @@
 
 [node name="Ball" parent="." unique_id=990425002 instance=ExtResource("3_j5yw3")]
 position = Vector2(-1, 112)
-linear_damp = 0.001
 
 [node name="Car" parent="." unique_id=147557718 instance=ExtResource("4_kldst")]
 position = Vector2(-145, 76)
-gravitySpeed = 20.0

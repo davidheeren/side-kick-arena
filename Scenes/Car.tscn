@@ -12,7 +12,9 @@ radius = 7.0
 [node name="Car" type="RigidBody2D" unique_id=147557718]
 physics_material_override = SubResource("PhysicsMaterial_8tfcp")
 script = ExtResource("1_22ybm")
+moveSpeed = 8.0
 verticalForce = 15.0
+flipSpeed = 5.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=404301118]
 texture = ExtResource("1_ygxqd")
