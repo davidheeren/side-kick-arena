@@ -11,7 +11,7 @@
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1832175446]
 
 [node name="Ball" parent="." unique_id=990425002 instance=ExtResource("3_j5yw3")]
-position = Vector2(-1, 112)
+position = Vector2(0, 35)
 
 [node name="Car" parent="." unique_id=147557718 instance=ExtResource("4_kldst")]
-position = Vector2(-145, 76)
+position = Vector2(-125, 59)
