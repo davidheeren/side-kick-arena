@@ -34,6 +34,9 @@ public partial class Car : RigidBody2D
     {
         float force = input * verticalForce * ppu;
 
+        // Maybe apply a base pure force with a
+        // tiny addition of smoothing like for horizontal
+
         ApplyCentralForce(Vector2.Down * force);
     }
 
