@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://b5xlo1f8khjc2"]
+
+[ext_resource type="Script" uid="uid://bjxjp4xxejqh3" path="res://Scripts/Car.cs" id="1_22ybm"]
+[ext_resource type="Texture2D" uid="uid://b22ncuahjwk6y" path="res://Sprites/Car1.png" id="1_ygxqd"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8tfcp"]
+friction = 0.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5orbf"]
+radius = 7.0
+
+[node name="Car" type="RigidBody2D" unique_id=147557718]
+physics_material_override = SubResource("PhysicsMaterial_8tfcp")
+script = ExtResource("1_22ybm")
+verticalForce = 15.0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=404301118]
+texture = ExtResource("1_ygxqd")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=994832607]
+shape = SubResource("CircleShape2D_5orbf")

@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://yxepwflk7owe"]
+
+[ext_resource type="PackedScene" uid="uid://bgsrljrrevi6n" path="res://Scenes/Map.tscn" id="2_gl6un"]
+[ext_resource type="PackedScene" uid="uid://crtqnrslr1daj" path="res://Scenes/Ball.tscn" id="3_j5yw3"]
+[ext_resource type="PackedScene" uid="uid://b5xlo1f8khjc2" path="res://Scenes/Car.tscn" id="4_kldst"]
+
+[node name="Game" type="Node2D" unique_id=1425847158]
+
+[node name="Map" parent="." unique_id=1758044603 instance=ExtResource("2_gl6un")]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1832175446]
+
+[node name="Ball" parent="." unique_id=990425002 instance=ExtResource("3_j5yw3")]
+position = Vector2(-1, 112)
+linear_damp = 0.001
+
+[node name="Car" parent="." unique_id=147557718 instance=ExtResource("4_kldst")]
+position = Vector2(-145, 76)
+gravitySpeed = 20.0
