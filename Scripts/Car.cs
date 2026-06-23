@@ -5,9 +5,13 @@ public partial class Car : RigidBody2D
     // Assumes mass of 1
 
     public const float ppu = 16;
-    [Export] float moveSpeed = 10;
-    [Export] float verticalForce = 20;
+
     [Export] float flipSpeed = 8;
+
+    [Export] float verticalForce = 20;
+    [Export] float verticalDecay = 1;
+
+    [Export] float moveSpeed = 10;
     [Export] float moveDecay = 5;
     [Export] float stopDecay = 3;
     [Export] float overMoveDecay = 0.5f;
@@ -27,17 +31,22 @@ public partial class Car : RigidBody2D
         else
             force = (speed - LinearVelocity.X) * moveDecay;
 
-        ApplyCentralForce(Vector2.Right * force);
+        ApplyCentralForce(Vector2.Right * force * Mass);
     }
 
     public void MoveVertical(float input)
     {
         float force = input * verticalForce * ppu;
 
-        // Maybe apply a base pure force with a
-        // tiny addition of smoothing like for horizontal
+        // Tiny amount of control if not overspeeding
+        if (input != 0)
+        {
+            float ajustForce = ((input * moveSpeed * ppu) - LinearVelocity.Y) * verticalDecay;
+            if (Mathf.Sign(ajustForce) == Mathf.Sign(force))
+                force += ajustForce;
+        }
 
-        ApplyCentralForce(Vector2.Down * force);
+        ApplyCentralForce(Vector2.Down * force * Mass);
     }
 
     public void Flip(Vector2 input)
@@ -53,7 +62,7 @@ public partial class Car : RigidBody2D
         if (Mathf.Sign(input.Y) != Mathf.Sign(LinearVelocity.Y))
             flipImpulse.Y -= LinearVelocity.Y;
 
-        ApplyCentralImpulse(flipImpulse);
+        ApplyCentralImpulse(flipImpulse * Mass);
     }
 
 

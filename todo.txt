@@ -1,2 +1,3 @@
 jump on ground
 deadzone
+ball custom drag
