@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://crtqnrslr1daj"]
 
 [ext_resource type="Texture2D" uid="uid://d4bkr60vbwr5f" path="res://Sprites/Ball.png" id="1_7nh6h"]
+[ext_resource type="Script" uid="uid://cimthbjy32rel" path="res://Scripts/Ball.cs" id="1_eb1ap"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_j5yw3"]
 friction = 0.1
@@ -12,7 +13,9 @@ radius = 12.0
 [node name="Ball" type="RigidBody2D" unique_id=990425002]
 mass = 0.2
 physics_material_override = SubResource("PhysicsMaterial_j5yw3")
-linear_damp = 0.1
+script = ExtResource("1_eb1ap")
+overDecay = 0.01
+alwaysDecay = 0.001
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=770152038]
 texture = ExtResource("1_7nh6h")
