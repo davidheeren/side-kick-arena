@@ -16,11 +16,13 @@ public partial class Car : RigidBody2D
 	[Export] float stopDecay = 3;
 	[Export] float overMoveDecay = 0.5f;
 
+	[Export] float rotationSpeed = 640;
 	[Export] Sprite2D sprite;
 
 	// Not flipping is 0
 	// 1: positive rotation, 2: negative
-	int flipAnimState;
+	int flipState;
+	bool canFlip = true;
 
 	public void MoveHorizontal(float input)
 	{
@@ -71,6 +73,11 @@ public partial class Car : RigidBody2D
 
 	public void Flip(Vector2 input)
 	{
+		// Exit if can't flip or already flipping
+		if (!canFlip || flipState != 0)
+			return;
+		canFlip = false;
+
 		// Default to up if no direction
 		if (input == Vector2.Zero)
 			input = Vector2.Up;
@@ -86,7 +93,7 @@ public partial class Car : RigidBody2D
 		ApplyCentralImpulse(flipImpulse * Mass);
 
 		// Set flip direction depending on which the car is facing
-		flipAnimState = sprite.FlipH ? -1 : 1;
+		flipState = sprite.FlipH ? -1 : 1;
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -104,21 +111,30 @@ public partial class Car : RigidBody2D
 		// Flip dir normalized
 		if (Input.IsActionJustPressed("flip"))
 			Flip(input.Normalized());
+
+		// If not flipping or after degrees rotated after flipping
+		//  then allow flip
+		if (flipState == 0 || Mathf.Abs(sprite.RotationDegrees) >= 90)
+		{
+			Vector2 rayDir = Vector2.Down.Rotated(sprite.Rotation);
+			if (Raycast(rayDir * ppu))
+				canFlip = true;
+		}
 	}
 
-	public void ProcessFlipAnimation(double delta)
+	public void UpdateFlipAnimation(double delta)
 	{
 		// Exit if not flipping
-		if (flipAnimState == 0)
+		if (flipState == 0)
 			return;
 
 		// If going to rotate over 360, then stop flipping
 		//  otherwise rotate some amount
-		float offsetDeg = flipAnimState * 640 * (float)delta;
+		float offsetDeg = flipState * rotationSpeed * (float)delta;
 		float possibleDeg = sprite.RotationDegrees + offsetDeg;
 		if (possibleDeg > 360 || possibleDeg < -360)
 		{
-			flipAnimState = 0;
+			flipState = 0;
 			sprite.RotationDegrees = 0;
 		}
 		else
@@ -129,7 +145,7 @@ public partial class Car : RigidBody2D
 
 	public override void _Process(double delta)
 	{
-		ProcessFlipAnimation(delta);
+		UpdateFlipAnimation(delta);
 	}
 
 	public Vector2 ProcessOverDeadzone(Vector2 input)
