@@ -17,7 +17,10 @@ public partial class Car : RigidBody2D
 	[Export] float overMoveDecay = 0.5f;
 
 	[Export] float rotationSpeed = 640;
+
 	[Export] Sprite2D sprite;
+	[Export] AudioStreamPlayer2D getFlipAudio;
+	[Export] AudioStreamPlayer2D flipAudio;
 
 	// Not flipping is 0
 	// 1: positive rotation, 2: negative
@@ -94,6 +97,8 @@ public partial class Car : RigidBody2D
 
 		// Set flip direction depending on which the car is facing
 		flipState = sprite.FlipH ? -1 : 1;
+
+		flipAudio.Play();
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -117,8 +122,11 @@ public partial class Car : RigidBody2D
 		if (flipState == 0 || Mathf.Abs(sprite.RotationDegrees) >= 90)
 		{
 			Vector2 rayDir = Vector2.Down.Rotated(sprite.Rotation);
-			if (Raycast(rayDir * ppu))
+			if (Raycast(rayDir * ppu) && !canFlip)
+			{
 				canFlip = true;
+				getFlipAudio.Play();
+			}
 		}
 	}
 
