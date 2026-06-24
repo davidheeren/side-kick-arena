@@ -21,6 +21,7 @@ moveSpeed = 7.0
 overMoveDecay = 0.75
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=404301118]
+z_index = 1
 texture = ExtResource("1_ygxqd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=994832607]

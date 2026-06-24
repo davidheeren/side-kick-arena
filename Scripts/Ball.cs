@@ -14,7 +14,7 @@ public partial class Ball : RigidBody2D
 
         if (LinearVelocity.Length() > maxSpeed * ppu)
         {
-            GD.Print("Over");
+            // GD.Print("Over");
             force += -LinearVelocity * overDecay * ppu;
         }
 

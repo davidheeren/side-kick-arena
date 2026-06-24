@@ -3,8 +3,6 @@ using Godot.Collections;
 
 public partial class Car : RigidBody2D
 {
-    // Assumes mass of 1
-
     public const float ppu = 16;
 
     [Export] float flipSpeed = 8;
@@ -20,6 +18,7 @@ public partial class Car : RigidBody2D
 
     public void MoveHorizontal(float input)
     {
+        // Add force with exponential decay towards target speed
         float speed = input * moveSpeed * ppu;
         float force;
 
@@ -38,17 +37,16 @@ public partial class Car : RigidBody2D
 
     public void MoveVertical(float input)
     {
-        bool grounded = Raycast(Vector2.Down * ppu * 0.75f);
+        // Jump to speed if on the ground and not already speed
+        bool grounded = Raycast(Vector2.Down * 9);
         float velDiff = jumpSpeed * ppu + LinearVelocity.Y;
         if (grounded && input < 0 && velDiff > 0)
-        {
             ApplyCentralImpulse(Vector2.Up * velDiff * Mass);
-            GD.Print("Jummped");
-        }
 
+        // Constant force
         float force = input * verticalForce * ppu;
 
-        // Tiny amount of control if not overspeeding
+        // Add tiny amount of control if not overspeeding
         if (input != 0)
         {
             float ajustForce = ((input * moveSpeed * ppu) - LinearVelocity.Y) * verticalDecay;
@@ -61,6 +59,7 @@ public partial class Car : RigidBody2D
 
     public void Flip(Vector2 input)
     {
+        // Default to up if no direction
         if (input == Vector2.Zero)
             input = Vector2.Up;
 
@@ -68,31 +67,38 @@ public partial class Car : RigidBody2D
 
         // Set not moving in flip direction, cancel out negative velocity
         if (input.X != 0 && Mathf.Sign(input.X) != Mathf.Sign(LinearVelocity.X))
-        {
             flipImpulse.X -= LinearVelocity.X;
-            GD.Print("X Impulse");
-        }
         if (input.Y != 0 && Mathf.Sign(input.Y) != Mathf.Sign(LinearVelocity.Y))
-        {
             flipImpulse.Y -= LinearVelocity.Y;
-            GD.Print("Y Impulse:");
-        }
 
         ApplyCentralImpulse(flipImpulse * Mass);
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        float overDeadzone = 0.8f;
         // Y is flipped
-        Vector2 input = Input.GetVector("move_left", "move_right", "move_up", "move_down");
+        Vector2 input;
+        input.X = Input.GetAxis("move_left", "move_right");
+        input.Y = Input.GetAxis("move_up", "move_down");
+        input = ProcessOverDeadzone(input);
 
         // I don't think normalizing the dir works the best for regular movement
         // I think its better to have each axis operate independantlly
         // if (input.Length() > overDeadzone)
         // input = input.Normalized();
 
-        // Over dead zone
+        MoveHorizontal(input.X);
+        MoveVertical(input.Y);
+
+        // Flip dir normalized
+        if (Input.IsActionJustPressed("flip"))
+            Flip(input.Normalized());
+    }
+
+    public Vector2 ProcessOverDeadzone(Vector2 input)
+    {
+        // Set input to max if abs over
+        float overDeadzone = 0.8f;
         if (input.X > overDeadzone)
             input.X = 1;
         else if (input.X < -overDeadzone)
@@ -101,13 +107,7 @@ public partial class Car : RigidBody2D
             input.Y = 1;
         else if (input.Y < -overDeadzone)
             input.Y = -1;
-
-        MoveHorizontal(input.X);
-        MoveVertical(input.Y);
-
-        // Flip dir normalized
-        if (Input.IsActionJustPressed("flip"))
-            Flip(input.Normalized());
+        return input;
     }
 
     public bool Raycast(Vector2 dir)
