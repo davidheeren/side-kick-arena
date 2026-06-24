@@ -13,10 +13,11 @@ radius = 7.0
 physics_material_override = SubResource("PhysicsMaterial_8tfcp")
 lock_rotation = true
 script = ExtResource("1_22ybm")
-flipSpeed = 5.0
-verticalForce = 15.0
+flipSpeed = 6.0
+jumpSpeed = 3.0
+verticalForce = 10.0
 verticalDecay = 0.5
-moveSpeed = 8.0
+moveSpeed = 7.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=404301118]
 texture = ExtResource("1_ygxqd")

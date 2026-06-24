@@ -1,4 +1,5 @@
 using Godot;
+using Godot.Collections;
 
 public partial class Car : RigidBody2D
 {
@@ -7,6 +8,7 @@ public partial class Car : RigidBody2D
     public const float ppu = 16;
 
     [Export] float flipSpeed = 8;
+    [Export] float jumpSpeed = 4;
 
     [Export] float verticalForce = 20;
     [Export] float verticalDecay = 1;
@@ -36,6 +38,14 @@ public partial class Car : RigidBody2D
 
     public void MoveVertical(float input)
     {
+        bool grounded = Raycast(Vector2.Down * ppu * 0.75f);
+        float velDiff = jumpSpeed * ppu + LinearVelocity.Y;
+        if (grounded && input < 0 && velDiff > 0)
+        {
+            ApplyCentralImpulse(Vector2.Up * velDiff * Mass);
+            GD.Print("Jummped");
+        }
+
         float force = input * verticalForce * ppu;
 
         // Tiny amount of control if not overspeeding
@@ -57,18 +67,24 @@ public partial class Car : RigidBody2D
         Vector2 flipImpulse = input * flipSpeed * ppu;
 
         // Set not moving in flip direction, cancel out negative velocity
-        if (Mathf.Sign(input.X) != Mathf.Sign(LinearVelocity.X))
+        if (input.X != 0 && Mathf.Sign(input.X) != Mathf.Sign(LinearVelocity.X))
+        {
             flipImpulse.X -= LinearVelocity.X;
-        if (Mathf.Sign(input.Y) != Mathf.Sign(LinearVelocity.Y))
+            GD.Print("X Impulse");
+        }
+        if (input.Y != 0 && Mathf.Sign(input.Y) != Mathf.Sign(LinearVelocity.Y))
+        {
             flipImpulse.Y -= LinearVelocity.Y;
+            GD.Print("Y Impulse:");
+        }
 
         ApplyCentralImpulse(flipImpulse * Mass);
     }
 
-
     public override void _PhysicsProcess(double delta)
     {
         float overDeadzone = 0.8f;
+        // Y is flipped
         Vector2 input = Input.GetVector("move_left", "move_right", "move_up", "move_down");
 
         // I don't think normalizing the dir works the best for regular movement
@@ -92,5 +108,14 @@ public partial class Car : RigidBody2D
         // Flip dir normalized
         if (Input.IsActionJustPressed("flip"))
             Flip(input.Normalized());
+    }
+
+    public bool Raycast(Vector2 dir)
+    {
+        // https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+        PhysicsDirectSpaceState2D spaceState = GetWorld2D().DirectSpaceState;
+        PhysicsRayQueryParameters2D query = PhysicsRayQueryParameters2D.Create(Position, Position + dir);
+        Dictionary result = spaceState.IntersectRay(query);
+        return result.Count > 0;
     }
 }
