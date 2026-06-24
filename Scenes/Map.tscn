@@ -95,11 +95,11 @@ offset_left = -192.0
 offset_top = -32.0
 offset_right = -160.0
 offset_bottom = 32.0
-color = Color(0.8627451, 0.5803922, 0.2901961, 1)
+color = Color(0.8666667, 0.46666667, 0.06666667, 1)
 
 [node name="ColorRectR" type="ColorRect" parent="." unique_id=515322580]
 offset_left = 160.0
 offset_top = -32.0
 offset_right = 192.0
 offset_bottom = 32.0
-color = Color(0.4117647, 0.6392157, 0.8666667, 1)
+color = Color(0.2, 0.53333336, 0.8666667, 1)

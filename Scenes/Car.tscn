@@ -9,7 +9,7 @@ friction = 0.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_5orbf"]
 radius = 7.0
 
-[node name="Car" type="RigidBody2D" unique_id=147557718]
+[node name="Car" type="RigidBody2D" unique_id=147557718 node_paths=PackedStringArray("sprite")]
 physics_material_override = SubResource("PhysicsMaterial_8tfcp")
 lock_rotation = true
 script = ExtResource("1_22ybm")
@@ -19,6 +19,7 @@ verticalForce = 10.0
 verticalDecay = 0.5
 moveSpeed = 7.0
 overMoveDecay = 0.75
+sprite = NodePath("Sprite2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=404301118]
 z_index = 1

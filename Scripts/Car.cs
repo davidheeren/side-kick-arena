@@ -3,119 +3,156 @@ using Godot.Collections;
 
 public partial class Car : RigidBody2D
 {
-    public const float ppu = 16;
+	public const float ppu = 16;
 
-    [Export] float flipSpeed = 8;
-    [Export] float jumpSpeed = 4;
+	[Export] float flipSpeed = 8;
+	[Export] float jumpSpeed = 4;
 
-    [Export] float verticalForce = 20;
-    [Export] float verticalDecay = 1;
+	[Export] float verticalForce = 20;
+	[Export] float verticalDecay = 1;
 
-    [Export] float moveSpeed = 10;
-    [Export] float moveDecay = 5;
-    [Export] float stopDecay = 3;
-    [Export] float overMoveDecay = 0.5f;
+	[Export] float moveSpeed = 10;
+	[Export] float moveDecay = 5;
+	[Export] float stopDecay = 3;
+	[Export] float overMoveDecay = 0.5f;
 
-    public void MoveHorizontal(float input)
-    {
-        // Add force with exponential decay towards target speed
-        float speed = input * moveSpeed * ppu;
-        float force;
+	[Export] Sprite2D sprite;
 
-        // Overspeeding
-        if (LinearVelocity.X != 0 && (LinearVelocity.X - speed) * Mathf.Sign(speed) > 0)
-            force = (speed - LinearVelocity.X) * overMoveDecay;
-        // Stopping
-        else if (input == 0)
-            force = (speed - LinearVelocity.X) * stopDecay;
-        // Moving
-        else
-            force = (speed - LinearVelocity.X) * moveDecay;
+	// Not flipping is 0
+	// 1: positive rotation, 2: negative
+	int flipAnimState;
 
-        ApplyCentralForce(Vector2.Right * force * Mass);
-    }
+	public void MoveHorizontal(float input)
+	{
+		// Add force with exponential decay towards target speed
+		float speed = input * moveSpeed * ppu;
+		float force;
 
-    public void MoveVertical(float input)
-    {
-        // Jump to speed if on the ground and not already speed
-        bool grounded = Raycast(Vector2.Down * 9);
-        float velDiff = jumpSpeed * ppu + LinearVelocity.Y;
-        if (grounded && input < 0 && velDiff > 0)
-            ApplyCentralImpulse(Vector2.Up * velDiff * Mass);
+		// Overspeeding
+		if (LinearVelocity.X != 0 && (LinearVelocity.X - speed) * Mathf.Sign(speed) > 0)
+			force = (speed - LinearVelocity.X) * overMoveDecay;
+		// Stopping
+		else if (input == 0)
+			force = (speed - LinearVelocity.X) * stopDecay;
+		// Moving
+		else
+			force = (speed - LinearVelocity.X) * moveDecay;
 
-        // Constant force
-        float force = input * verticalForce * ppu;
+		ApplyCentralForce(Vector2.Right * force * Mass);
 
-        // Add tiny amount of control if not overspeeding
-        if (input != 0)
-        {
-            float ajustForce = ((input * moveSpeed * ppu) - LinearVelocity.Y) * verticalDecay;
-            if (Mathf.Sign(ajustForce) == Mathf.Sign(force))
-                force += ajustForce;
-        }
+		// Flip sprite
+		if (input > 0 && sprite.FlipH)
+			sprite.FlipH = false;
+		else if (input < 0 && !sprite.FlipH)
+			sprite.FlipH = true;
+	}
 
-        ApplyCentralForce(Vector2.Down * force * Mass);
-    }
+	public void MoveVertical(float input)
+	{
+		// Jump to speed if on the ground and not already speed
+		bool grounded = Raycast(Vector2.Down * 9);
+		float velDiff = jumpSpeed * ppu + LinearVelocity.Y;
+		if (grounded && input < 0 && velDiff > 0)
+			ApplyCentralImpulse(Vector2.Up * velDiff * Mass);
 
-    public void Flip(Vector2 input)
-    {
-        // Default to up if no direction
-        if (input == Vector2.Zero)
-            input = Vector2.Up;
+		// Constant force
+		float force = input * verticalForce * ppu;
 
-        Vector2 flipImpulse = input * flipSpeed * ppu;
+		// Add tiny amount of control if not overspeeding
+		if (input != 0)
+		{
+			float ajustForce = ((input * moveSpeed * ppu) - LinearVelocity.Y) * verticalDecay;
+			if (Mathf.Sign(ajustForce) == Mathf.Sign(force))
+				force += ajustForce;
+		}
 
-        // Set not moving in flip direction, cancel out negative velocity
-        if (input.X != 0 && Mathf.Sign(input.X) != Mathf.Sign(LinearVelocity.X))
-            flipImpulse.X -= LinearVelocity.X;
-        if (input.Y != 0 && Mathf.Sign(input.Y) != Mathf.Sign(LinearVelocity.Y))
-            flipImpulse.Y -= LinearVelocity.Y;
+		ApplyCentralForce(Vector2.Down * force * Mass);
+	}
 
-        ApplyCentralImpulse(flipImpulse * Mass);
-    }
+	public void Flip(Vector2 input)
+	{
+		// Default to up if no direction
+		if (input == Vector2.Zero)
+			input = Vector2.Up;
 
-    public override void _PhysicsProcess(double delta)
-    {
-        // Y is flipped
-        Vector2 input;
-        input.X = Input.GetAxis("move_left", "move_right");
-        input.Y = Input.GetAxis("move_up", "move_down");
-        input = ProcessOverDeadzone(input);
+		Vector2 flipImpulse = input * flipSpeed * ppu;
 
-        // I don't think normalizing the dir works the best for regular movement
-        // I think its better to have each axis operate independantlly
-        // if (input.Length() > overDeadzone)
-        // input = input.Normalized();
+		// Set not moving in flip direction, cancel out negative velocity
+		if (input.X != 0 && Mathf.Sign(input.X) != Mathf.Sign(LinearVelocity.X))
+			flipImpulse.X -= LinearVelocity.X;
+		if (input.Y != 0 && Mathf.Sign(input.Y) != Mathf.Sign(LinearVelocity.Y))
+			flipImpulse.Y -= LinearVelocity.Y;
 
-        MoveHorizontal(input.X);
-        MoveVertical(input.Y);
+		ApplyCentralImpulse(flipImpulse * Mass);
 
-        // Flip dir normalized
-        if (Input.IsActionJustPressed("flip"))
-            Flip(input.Normalized());
-    }
+		// Set flip direction depending on which the car is facing
+		flipAnimState = sprite.FlipH ? -1 : 1;
+	}
 
-    public Vector2 ProcessOverDeadzone(Vector2 input)
-    {
-        // Set input to max if abs over
-        float overDeadzone = 0.8f;
-        if (input.X > overDeadzone)
-            input.X = 1;
-        else if (input.X < -overDeadzone)
-            input.X = -1;
-        if (input.Y > overDeadzone)
-            input.Y = 1;
-        else if (input.Y < -overDeadzone)
-            input.Y = -1;
-        return input;
-    }
+	public override void _PhysicsProcess(double delta)
+	{
+		// Get non normalized input
+		// Y is flipped
+		Vector2 input;
+		input.X = Input.GetAxis("move_left", "move_right");
+		input.Y = Input.GetAxis("move_up", "move_down");
+		input = ProcessOverDeadzone(input);
 
-    public bool Raycast(Vector2 dir)
-    {
-        // https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
-        PhysicsDirectSpaceState2D spaceState = GetWorld2D().DirectSpaceState;
-        PhysicsRayQueryParameters2D query = PhysicsRayQueryParameters2D.Create(Position, Position + dir);
-        Dictionary result = spaceState.IntersectRay(query);
-        return result.Count > 0;
-    }
+		MoveHorizontal(input.X);
+		MoveVertical(input.Y);
+
+		// Flip dir normalized
+		if (Input.IsActionJustPressed("flip"))
+			Flip(input.Normalized());
+	}
+
+	public void ProcessFlipAnimation(double delta)
+	{
+		// Exit if not flipping
+		if (flipAnimState == 0)
+			return;
+
+		// If going to rotate over 360, then stop flipping
+		//  otherwise rotate some amount
+		float offsetDeg = flipAnimState * 640 * (float)delta;
+		float possibleDeg = sprite.RotationDegrees + offsetDeg;
+		if (possibleDeg > 360 || possibleDeg < -360)
+		{
+			flipAnimState = 0;
+			sprite.RotationDegrees = 0;
+		}
+		else
+		{
+			sprite.RotationDegrees = possibleDeg;
+		}
+	}
+
+	public override void _Process(double delta)
+	{
+		ProcessFlipAnimation(delta);
+	}
+
+	public Vector2 ProcessOverDeadzone(Vector2 input)
+	{
+		// Set input to max if abs over
+		float overDeadzone = 0.8f;
+		if (input.X > overDeadzone)
+			input.X = 1;
+		else if (input.X < -overDeadzone)
+			input.X = -1;
+		if (input.Y > overDeadzone)
+			input.Y = 1;
+		else if (input.Y < -overDeadzone)
+			input.Y = -1;
+		return input;
+	}
+
+	public bool Raycast(Vector2 dir)
+	{
+		// https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+		PhysicsDirectSpaceState2D spaceState = GetWorld2D().DirectSpaceState;
+		PhysicsRayQueryParameters2D query = PhysicsRayQueryParameters2D.Create(Position, Position + dir);
+		Dictionary result = spaceState.IntersectRay(query);
+		return result.Count > 0;
+	}
 }
