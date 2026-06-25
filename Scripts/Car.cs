@@ -154,6 +154,10 @@ public partial class Car : RigidBody2D
 	public override void _Process(double delta)
 	{
 		UpdateFlipAnimation(delta);
+
+		if (Input.IsActionJustPressed("flip"))
+		{
+		}
 	}
 
 	public Vector2 ProcessOverDeadzone(Vector2 input)
