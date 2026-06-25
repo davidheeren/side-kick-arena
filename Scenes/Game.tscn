@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bgsrljrrevi6n" path="res://Scenes/Map.tscn" id="2_gl6un"]
 [ext_resource type="PackedScene" uid="uid://crtqnrslr1daj" path="res://Scenes/Ball.tscn" id="3_j5yw3"]
+[ext_resource type="Script" uid="uid://c8w0wru6ik2y1" path="res://Scenes/TwoCarController.cs" id="4_b2bpf"]
 [ext_resource type="PackedScene" uid="uid://b5xlo1f8khjc2" path="res://Scenes/Car.tscn" id="4_kldst"]
 
 [node name="Game" type="Node2D" unique_id=1425847158]
@@ -11,7 +12,12 @@
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1832175446]
 
 [node name="Ball" parent="." unique_id=990425002 instance=ExtResource("3_j5yw3")]
-position = Vector2(0, 35)
+position = Vector2(0, 32)
 
 [node name="Car" parent="." unique_id=147557718 instance=ExtResource("4_kldst")]
-position = Vector2(-125, 59)
+position = Vector2(-96, 64)
+
+[node name="TwoCarController" type="Node" parent="." unique_id=427575263 node_paths=PackedStringArray("car1", "ball")]
+script = ExtResource("4_b2bpf")
+car1 = NodePath("../Car")
+ball = NodePath("../Ball")

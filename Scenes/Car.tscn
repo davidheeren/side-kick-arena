@@ -38,3 +38,4 @@ volume_db = 10.0
 
 [node name="FlipSFX" type="AudioStreamPlayer2D" parent="." unique_id=205480745]
 stream = ExtResource("4_qeqd0")
+volume_db = -5.0

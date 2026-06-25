@@ -110,22 +110,8 @@ public partial class Car : RigidBody2D
         flipAudio.Play();
     }
 
-    public override void _PhysicsProcess(double delta)
+    public void UpdateCanFlip()
     {
-        // Get non normalized input
-        // Y is flipped
-        Vector2 input;
-        input.X = Input.GetAxis("move_left", "move_right");
-        input.Y = Input.GetAxis("move_up", "move_down");
-        input = ProcessOverDeadzone(input);
-
-        MoveHorizontal(input.X);
-        MoveVertical(input.Y);
-
-        // Flip dir normalized
-        if (Input.IsActionJustPressed("flip"))
-            Flip(input.Normalized());
-
         // If not flipping or after degrees rotated after flipping
         //  then allow flip
         if (flipState == 0 || Mathf.Abs(sprite.RotationDegrees) >= 90)
@@ -138,6 +124,8 @@ public partial class Car : RigidBody2D
             }
         }
     }
+
+    public override void _PhysicsProcess(double delta) { }
 
     public void UpdateFlipAnimation(double delta)
     {
@@ -176,10 +164,17 @@ public partial class Car : RigidBody2D
         // }
     }
 
-    public Vector2 ProcessOverDeadzone(Vector2 input)
+    public Vector2 GetInput()
     {
-        // Set input to max if abs over
+        // Get non normalized input
+        // Y is flipped
         float overDeadzone = 0.8f;
+        Vector2 input;
+
+        input.X = Input.GetAxis("move_left", "move_right");
+        input.Y = Input.GetAxis("move_up", "move_down");
+
+        // Set input to max if abs over
         if (input.X > overDeadzone)
             input.X = 1;
         else if (input.X < -overDeadzone)
