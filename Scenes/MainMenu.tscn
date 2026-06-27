@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://dne7niitfj0lw"]
+
+[ext_resource type="Script" uid="uid://c4hsmp1qnfo3l" path="res://Scripts/MainMenu.cs" id="1_tt5f1"]
+
+[node name="MainMenu" type="BoxContainer" unique_id=1230839309 node_paths=PackedStringArray("ipInput", "portInput", "joinButton", "hostButton")]
+offset_left = -48.0
+offset_top = -64.0
+offset_right = 144.0
+offset_bottom = 206.0
+scale = Vector2(0.5, 0.5)
+alignment = 1
+vertical = true
+script = ExtResource("1_tt5f1")
+ipInput = NodePath("IpSetting/LineEdit")
+portInput = NodePath("PortSetting/LineEdit")
+joinButton = NodePath("JoinButton")
+hostButton = NodePath("HostButton")
+
+[node name="IpSetting" type="BoxContainer" parent="." unique_id=934301612]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="IpSetting" unique_id=16465485]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Ip Address"
+
+[node name="LineEdit" type="LineEdit" parent="IpSetting" unique_id=406925082]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "127.0.0.1"
+expand_to_text_length = true
+
+[node name="PortSetting" type="BoxContainer" parent="." unique_id=497280353]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="PortSetting" unique_id=990818237]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Port"
+
+[node name="LineEdit" type="LineEdit" parent="PortSetting" unique_id=1422824140]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "9050"
+expand_to_text_length = true
+
+[node name="JoinButton" type="Button" parent="." unique_id=2050610096]
+layout_mode = 2
+text = "Join"
+
+[node name="Spacer" type="Control" parent="." unique_id=1486136006]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="HostButton" type="Button" parent="." unique_id=55839272]
+layout_mode = 2
+text = "Host"

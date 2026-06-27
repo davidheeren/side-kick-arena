@@ -70,6 +70,11 @@ flip={
 3d/physics_engine="Jolt Physics"
 2d/default_gravity=112.0
 common/physics_interpolation=true
+rapier/solver/preset=1
+rapier/solver/num_internal_pgs_iterations=4
+rapier/solver/num_internal_stabilization_iterations=4
+rapier/solver/contact_damping_ratio=20.0
+rapier/solver/contact_natural_frequency=50.0
 
 [rendering]
 

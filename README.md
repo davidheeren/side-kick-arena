@@ -8,3 +8,9 @@ https://store.godotengine.org/asset/appsinacup/rapier-physics-2d-slower-version-
 
 ## Notice
 I you have found this, feel free to try to hack it lol
+
+# Docs
+https://github.com/revenantx/litenetlib  
+https://revenantx.github.io/LiteNetLib/index.html  
+https://godot.rapier.rs  
+https://docs.godotengine.org/en/stable

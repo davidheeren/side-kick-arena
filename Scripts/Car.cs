@@ -18,7 +18,7 @@ public partial class Car : RigidBody2D
 
     [Export] float rotationSpeed = 640;
 
-    [Export] Sprite2D sprite;
+    [Export] public Sprite2D sprite { get; private set; }
     [Export] AudioStreamPlayer2D getFlipAudio;
     [Export] AudioStreamPlayer2D flipAudio;
 
@@ -27,8 +27,8 @@ public partial class Car : RigidBody2D
 
     // Not flipping is 0
     // 1: positive rotation, 2: negative
-    int flipState;
-    bool canFlip = true;
+    public int flipState;
+    public bool canFlip = true;
 
     public override void _Ready()
     {
