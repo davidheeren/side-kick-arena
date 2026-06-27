@@ -59,6 +59,7 @@ public struct CarState : INetSerializable
     public float yVelocity;
 
     public float rotation;
+    public bool fliphH;
 
     public int flipState;
     public bool canFlip;
@@ -72,6 +73,7 @@ public struct CarState : INetSerializable
         yVelocity = reader.GetFloat();
 
         rotation = reader.GetFloat();
+        fliphH = reader.GetBool();
 
         flipState = reader.GetInt();
         canFlip = reader.GetBool();
@@ -86,6 +88,7 @@ public struct CarState : INetSerializable
         writer.Put(yVelocity);
 
         writer.Put(rotation);
+        writer.Put(fliphH);
 
         writer.Put(flipState);
         writer.Put(canFlip);

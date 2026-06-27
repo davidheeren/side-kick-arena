@@ -85,6 +85,7 @@ public partial class TwoCarController : Node, INetEventListener
             xVelocity = car1.LinearVelocity.X,
             yVelocity = car1.LinearVelocity.Y,
             rotation = car1.sprite.RotationDegrees,
+            fliphH = car1.sprite.FlipH,
             flipState = car1.flipState,
             canFlip = car1.canFlip,
         };
@@ -112,6 +113,7 @@ public partial class TwoCarController : Node, INetEventListener
         car1.GlobalPosition = new Vector2(state.car1.xPosition, state.car1.yPosition);
         // car1.LinearVelocity = new Vector2(state.car1.xVelocity, state.car1.yVelocity);
         car1.sprite.RotationDegrees = state.car1.rotation;
+        car1.sprite.FlipH = state.car1.fliphH;
         car1.flipState = state.car1.flipState;
         car1.canFlip = state.car1.canFlip;
 

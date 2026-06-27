@@ -32,6 +32,7 @@ text = "127.0.0.1"
 expand_to_text_length = true
 
 [node name="PortSetting" type="BoxContainer" parent="." unique_id=497280353]
+visible = false
 layout_mode = 2
 alignment = 1
 
