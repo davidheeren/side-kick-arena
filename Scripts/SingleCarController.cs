@@ -6,7 +6,9 @@ public partial class SingleCarController : Node
 
     public override void _PhysicsProcess(double delta)
     {
-        Vector2 input = car.GetInput();
+        GD.PrintErr("Should not be using single car controller yet");
+        // Vector2 input = ProcessMoveInput(GetMoveInput());
+        Vector2 input = Vector2.Zero;
         car.MoveHorizontal(input.X);
         car.MoveVertical(input.Y);
 

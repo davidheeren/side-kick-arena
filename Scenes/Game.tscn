@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://crtqnrslr1daj" path="res://Scenes/Ball.tscn" id="3_j5yw3"]
 [ext_resource type="Script" uid="uid://c8w0wru6ik2y1" path="res://Scripts/TwoCarController.cs" id="4_b2bpf"]
 [ext_resource type="PackedScene" uid="uid://b5xlo1f8khjc2" path="res://Scenes/Car.tscn" id="4_kldst"]
+[ext_resource type="Texture2D" uid="uid://c7qpaholii7ie" path="res://Sprites/Car2.png" id="5_7lihs"]
 [ext_resource type="PackedScene" uid="uid://dne7niitfj0lw" path="res://Scenes/MainMenu.tscn" id="5_b2bpf"]
 
 [node name="Game" type="Node2D" unique_id=1425847158]
@@ -15,13 +16,29 @@
 [node name="Ball" parent="." unique_id=990425002 instance=ExtResource("3_j5yw3")]
 position = Vector2(0, 32)
 
-[node name="Car" parent="." unique_id=147557718 instance=ExtResource("4_kldst")]
+[node name="Car1" parent="." unique_id=147557718 instance=ExtResource("4_kldst")]
 position = Vector2(-96, 64)
 
-[node name="TwoCarController" type="Node" parent="." unique_id=427575263 node_paths=PackedStringArray("car1", "ball")]
+[node name="Car2" parent="." unique_id=1960795664 instance=ExtResource("4_kldst")]
+position = Vector2(96, 64)
+
+[node name="Sprite2D" parent="Car2" index="0" unique_id=404301118]
+texture = ExtResource("5_7lihs")
+flip_h = true
+
+[node name="GetFlipSFX" parent="Car2" index="2" unique_id=215813433]
+pitch_scale = 0.75
+
+[node name="FlipSFX" parent="Car2" index="3" unique_id=205480745]
+pitch_scale = 0.75
+
+[node name="TwoCarController" type="Node" parent="." unique_id=427575263 node_paths=PackedStringArray("car1", "car2", "ball")]
 script = ExtResource("4_b2bpf")
-car1 = NodePath("../Car")
+car1 = NodePath("../Car1")
+car2 = NodePath("../Car2")
 ball = NodePath("../Ball")
 
 [node name="MainMenu" parent="." unique_id=1230839309 node_paths=PackedStringArray("twoCarController") instance=ExtResource("5_b2bpf")]
 twoCarController = NodePath("../TwoCarController")
+
+[editable path="Car2"]

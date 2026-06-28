@@ -17,11 +17,49 @@ public partial class TwoCarController : Node, INetEventListener
     bool isHost = false;
 
     NetManager manager;
+    // Peer is client if this is the host, and vice versa
     NetPeer netPeer;
+
+    Rid space;
+    float physicsDelta; // Get from settings
+    ulong networkDelta = 1000 / 30; // 30 hz
+    ulong lastNetworkTime = 0;
+    ulong nTick = 0;
+
+    ulong clientLastFlipTick = 0;
+    bool clientShouldFlip = false;
+    Vector2 clientLastMove = Vector2.Zero;
 
     public override void _Ready()
     {
+        physicsDelta = 1 / (float)ProjectSettings.GetSetting("physics/common/physics_ticks_per_second");
+        space = GetViewport().GetWorld2D().Space;
         PhysicsServer2D.SetActive(false);
+    }
+
+    private Vector2 GetMoveInput()
+    {
+        // Get non normalized input
+        // Y is flipped
+        Vector2 input;
+        input.X = Input.GetAxis("move_left", "move_right");
+        input.Y = Input.GetAxis("move_up", "move_down");
+        return input;
+    }
+
+    private Vector2 LimitMoveInput(Vector2 input)
+    {
+        float overDeadzone = 0.8f;
+        // Set input to max if abs over
+        if (input.X > overDeadzone)
+            input.X = 1;
+        else if (input.X < -overDeadzone)
+            input.X = -1;
+        if (input.Y > overDeadzone)
+            input.Y = 1;
+        else if (input.Y < -overDeadzone)
+            input.Y = -1;
+        return input;
     }
 
     public override void _Process(double delta)
@@ -31,29 +69,75 @@ public partial class TwoCarController : Node, INetEventListener
 
         manager.PollEvents();
 
-        if (isHost && netPeer != null)
+        if (Time.GetTicksMsec() - lastNetworkTime > networkDelta)
         {
-            StatePayload statePayload = GetState();
+            lastNetworkTime = Time.GetTicksMsec();
+            nTick++;
+
+            NetworkTick();
+        }
+    }
+
+    private void NetworkTick()
+    {
+        if (netPeer == null)
+            return;
+
+        if (isHost)
+        {
+            StatePayload statePayload = Simulator.GetState(car1, car2, ball, nTick);
             NetDataWriter writer = new NetDataWriter();
             writer.Put(statePayload);
+            netPeer.Send(writer, DeliveryMethod.Unreliable);
+        }
+        else
+        {
+            InputPayload inputPayload = new InputPayload
+            {
+                tick = nTick,
+                moveX = clientLastMove.X,
+                moveY = clientLastMove.Y,
+                flip = clientLastFlipTick,
+            };
+
+            NetDataWriter writer = new NetDataWriter();
+            writer.Put(inputPayload);
             netPeer.Send(writer, DeliveryMethod.Unreliable);
         }
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!isRunning || !isHost)
+        if (!isRunning)
             return;
 
-        Vector2 input = car1.GetInput();
-        car1.MoveHorizontal(input.X);
-        car1.MoveVertical(input.Y);
+        if (isHost)
+        {
+            // Car 1
+            Vector2 hostMoveInput = LimitMoveInput(GetMoveInput());
+            car1.MoveHorizontal(hostMoveInput.X);
+            car1.MoveVertical(hostMoveInput.Y);
+            if (Input.IsActionJustPressed("flip"))
+                car1.Flip(hostMoveInput.Normalized());
+            car1.UpdateCanFlip();
 
-        // Flip dir normalized
-        if (Input.IsActionJustPressed("flip"))
-            car1.Flip(input.Normalized());
+            // Car 2
+            car2.MoveHorizontal(clientLastMove.X);
+            car2.MoveVertical(clientLastMove.Y);
+            if (clientShouldFlip)
+            {
+                car2.Flip(clientLastMove.Normalized());
+                clientShouldFlip = false;
+            }
+            car2.UpdateCanFlip();
+        }
+        else
+        {
+            clientLastMove = LimitMoveInput(GetMoveInput());
 
-        car1.UpdateCanFlip();
+            if (Input.IsActionJustPressed("flip"))
+                clientLastFlipTick = nTick;
+        }
     }
 
     public void StartHost()
@@ -66,7 +150,7 @@ public partial class TwoCarController : Node, INetEventListener
         manager.Start(port);
     }
 
-    public void StartClient(string ipAddress, int port)
+    public void StartClient(string ipAddress)
     {
         // PhysicsServer2D.SetActive(true);
         isRunning = true;
@@ -76,84 +160,38 @@ public partial class TwoCarController : Node, INetEventListener
         manager.Connect(ipAddress, port, connectionKey);
     }
 
-    public StatePayload GetState()
-    {
-        CarState carState1 = new CarState
-        {
-            xPosition = car1.GlobalPosition.X,
-            yPosition = car1.GlobalPosition.Y,
-            xVelocity = car1.LinearVelocity.X,
-            yVelocity = car1.LinearVelocity.Y,
-            rotation = car1.sprite.RotationDegrees,
-            fliphH = car1.sprite.FlipH,
-            flipState = car1.flipState,
-            canFlip = car1.canFlip,
-        };
-
-        BallState ballState = new BallState
-        {
-            xPosition = ball.GlobalPosition.X,
-            yPosition = ball.GlobalPosition.Y,
-            xVelocity = ball.LinearVelocity.X,
-            yVelocity = ball.LinearVelocity.Y,
-            rotation = ball.GlobalRotationDegrees,
-            rotationVelocity = ball.AngularVelocity,
-        };
-
-        return new StatePayload
-        {
-            car1 = carState1,
-            ball = ballState,
-        };
-    }
-
-    public void SetState(StatePayload state)
-    {
-        // Car 1
-        car1.GlobalPosition = new Vector2(state.car1.xPosition, state.car1.yPosition);
-        // car1.LinearVelocity = new Vector2(state.car1.xVelocity, state.car1.yVelocity);
-        car1.sprite.RotationDegrees = state.car1.rotation;
-        car1.sprite.FlipH = state.car1.fliphH;
-        car1.flipState = state.car1.flipState;
-        car1.canFlip = state.car1.canFlip;
-
-        // Ball
-        ball.GlobalPosition = new Vector2(state.ball.xPosition, state.ball.yPosition);
-        // ball.LinearVelocity = new Vector2(state.ball.xVelocity, state.ball.yVelocity);
-        ball.GlobalRotationDegrees = state.ball.rotation;
-        // ball.AngularVelocity = state.ball.rotationVelocity;
-    }
 
     public void OnPeerConnected(NetPeer peer)
     {
         netPeer = peer;
         if (isHost)
-        {
             GD.Print($"Client connected: {netPeer}");
-        }
         else
-        {
             GD.Print($"Connected to host: {netPeer}");
-        }
     }
 
     public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo) { }
-
     public void OnNetworkError(IPEndPoint endPoint, SocketError socketError) { }
 
     public void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
     {
-        if (isHost) { }
+        if (isHost)
+        {
+            InputPayload inputPayload = reader.Get<InputPayload>();
+            if (inputPayload.flip > clientLastFlipTick)
+                clientShouldFlip = true;
+            clientLastFlipTick = inputPayload.flip;
+            clientLastMove = LimitMoveInput(new Vector2(inputPayload.moveX, inputPayload.moveY));
+        }
         else
         {
             StatePayload statePayload = reader.Get<StatePayload>();
-            SetState(statePayload);
+            Simulator.SetState(car1, car2, ball, statePayload);
         }
         reader.Recycle();
     }
 
     public void OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType) { }
-
     public void OnNetworkLatencyUpdate(NetPeer peer, int latency) { }
 
     public void OnConnectionRequest(ConnectionRequest request)

@@ -2,40 +2,40 @@ using LiteNetLib.Utils;
 
 public struct InputPayload : INetSerializable
 {
-    public int tick;
-    public float xAxis;
-    public float yAxis;
+    public ulong tick;
+    public float moveX;
+    public float moveY;
     // In the case of network uncertainty, this will be the last flip tick.
     // If local input, then 0 is no input, 1 is input.
-    public int flip;
+    public ulong flip;
 
     public void Deserialize(NetDataReader reader)
     {
-        tick = reader.GetInt();
-        xAxis = reader.GetFloat();
-        yAxis = reader.GetFloat();
-        flip = reader.GetInt();
+        tick = reader.GetULong();
+        moveX = reader.GetFloat();
+        moveY = reader.GetFloat();
+        flip = reader.GetULong();
     }
 
     public void Serialize(NetDataWriter writer)
     {
         writer.Put(tick);
-        writer.Put(xAxis);
-        writer.Put(yAxis);
+        writer.Put(moveX);
+        writer.Put(moveY);
         writer.Put(flip);
     }
 }
 
 public struct StatePayload : INetSerializable
 {
-    public int tick;
+    public ulong tick;
     public CarState car1;
     public CarState car2;
     public BallState ball;
 
     public void Deserialize(NetDataReader reader)
     {
-        tick = reader.GetInt();
+        tick = reader.GetULong();
         car1.Deserialize(reader);
         car2.Deserialize(reader);
         ball.Deserialize(reader);

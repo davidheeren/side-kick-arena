@@ -22,19 +22,12 @@ public partial class Car : RigidBody2D
     [Export] AudioStreamPlayer2D getFlipAudio;
     [Export] AudioStreamPlayer2D flipAudio;
 
-    Rid space;
-    float fixedDelta;
-
     // Not flipping is 0
     // 1: positive rotation, 2: negative
     public int flipState;
     public bool canFlip = true;
 
-    public override void _Ready()
-    {
-        space = GetWorld2D().Space;
-        fixedDelta = 1 / (float)ProjectSettings.GetSetting("physics/common/physics_ticks_per_second");
-    }
+    public override void _Ready() { }
 
     public void MoveHorizontal(float input)
     {
@@ -162,28 +155,6 @@ public partial class Car : RigidBody2D
         //     }
         //     PhysicsServer2D.Singleton.Call("space_flush_queries", space);
         // }
-    }
-
-    public Vector2 GetInput()
-    {
-        // Get non normalized input
-        // Y is flipped
-        float overDeadzone = 0.8f;
-        Vector2 input;
-
-        input.X = Input.GetAxis("move_left", "move_right");
-        input.Y = Input.GetAxis("move_up", "move_down");
-
-        // Set input to max if abs over
-        if (input.X > overDeadzone)
-            input.X = 1;
-        else if (input.X < -overDeadzone)
-            input.X = -1;
-        if (input.Y > overDeadzone)
-            input.Y = 1;
-        else if (input.Y < -overDeadzone)
-            input.Y = -1;
-        return input;
     }
 
     public bool Raycast(Vector2 dir)
