@@ -31,6 +31,8 @@ public partial class TwoCarController : Node, INetEventListener
     bool clientShouldFlip = false;
     Vector2 clientLastMove = Vector2.Zero;
 
+    StatePayload? lastState;
+
     public override void _Ready()
     {
         Debug.AssertNotNull(car1, "Car 1 cannot be null");
@@ -139,9 +141,25 @@ public partial class TwoCarController : Node, INetEventListener
         else
         {
             clientLastMove = LimitMoveInput(GetMoveInput());
+            // car2.MoveHorizontal(clientLastMove.X);
+            // car2.MoveVertical(clientLastMove.Y);
 
             if (Input.IsActionJustPressed("flip"))
+            {
+                // car2.Flip(clientLastMove.Normalized());
                 clientLastFlipTick = nTick;
+            }
+
+            // car2.UpdateCanFlip();
+
+            // car1.MoveHorizontal(0);
+            // car1.MoveVertical(0);
+
+            if (lastState != null)
+            {
+                Simulator.SetState(car1, car2, ball, lastState.Value);
+                lastState = null;
+            }
         }
     }
 
@@ -159,7 +177,7 @@ public partial class TwoCarController : Node, INetEventListener
 
     public void StartClient(string ipAddress)
     {
-        // PhysicsServer2D.SetActive(true);
+        PhysicsServer2D.SetActive(true);
         isRunning = true;
 
         manager = new NetManager(this);
@@ -195,7 +213,8 @@ public partial class TwoCarController : Node, INetEventListener
         else
         {
             StatePayload statePayload = reader.Get<StatePayload>();
-            Simulator.SetState(car1, car2, ball, statePayload);
+            lastState = statePayload;
+            // Simulator.SetState(car1, car2, ball, statePayload);
         }
         reader.Recycle();
     }

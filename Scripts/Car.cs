@@ -1,7 +1,7 @@
 using Godot;
 using Godot.Collections;
 
-public partial class Car : RigidBody2D
+public partial class Car : RigidBody2D, IEntity
 {
     public const float ppu = 16;
 
@@ -27,7 +27,17 @@ public partial class Car : RigidBody2D
     public int flipState;
     public bool canFlip = true;
 
-    public override void _Ready() { }
+    public Vector2? targetVelocity;
+    public Vector2 EVelocity { get => LinearVelocity; set => targetVelocity = value; }
+    public Vector2 EPosition { get => GlobalPosition; set => GlobalPosition = value; }
+
+    public override void _IntegrateForces(PhysicsDirectBodyState2D state)
+    {
+        if (targetVelocity == null)
+            return;
+        state.LinearVelocity = targetVelocity.Value;
+        targetVelocity = null;
+    }
 
     public void MoveHorizontal(float input)
     {
@@ -144,17 +154,6 @@ public partial class Car : RigidBody2D
     public override void _Process(double delta)
     {
         UpdateFlipAnimation(delta);
-
-        // Example of how to step throught the simulation
-        // if (Input.IsActionJustPressed("flip"))
-        // {
-        //     // PhysicsServer2D.SetActive(false);
-        //     for (int i = 0; i < 30; i++)
-        //     {
-        //         PhysicsServer2D.Singleton.Call("space_step", space, fixedDelta);
-        //     }
-        //     PhysicsServer2D.Singleton.Call("space_flush_queries", space);
-        // }
     }
 
     public bool Raycast(Vector2 dir)
