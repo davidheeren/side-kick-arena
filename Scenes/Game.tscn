@@ -27,12 +27,6 @@ position = Vector2(96, 64)
 texture = ExtResource("5_7lihs")
 flip_h = true
 
-[node name="GetFlipSFX" parent="Car2" index="2" unique_id=215813433]
-pitch_scale = 0.75
-
-[node name="FlipSFX" parent="Car2" index="3" unique_id=205480745]
-pitch_scale = 0.75
-
 [node name="TwoCarController" type="Node" parent="." unique_id=427575263 node_paths=PackedStringArray("car1", "car2", "ball")]
 script = ExtResource("4_b2bpf")
 car1 = NodePath("../Car1")

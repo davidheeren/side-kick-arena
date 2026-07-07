@@ -12,6 +12,7 @@ public partial class TwoCarController : Node, INetEventListener
 
     int port = 9050;
     string connectionKey = "supersecret";
+    float peerPitchScale = 0.75f;
 
     bool isRunning = false;
     bool isHost = false;
@@ -32,6 +33,10 @@ public partial class TwoCarController : Node, INetEventListener
 
     public override void _Ready()
     {
+        Debug.AssertNotNull(car1, "Car 1 cannot be null");
+        Debug.AssertNotNull(car2, "Car 2 cannot be null");
+        Debug.AssertNotNull(ball, "Ball cannot be null");
+
         physicsDelta = 1 / (float)ProjectSettings.GetSetting("physics/common/physics_ticks_per_second");
         space = GetViewport().GetWorld2D().Space;
         PhysicsServer2D.SetActive(false);
@@ -148,6 +153,8 @@ public partial class TwoCarController : Node, INetEventListener
 
         manager = new NetManager(this);
         manager.Start(port);
+        car2.GetNode<AudioStreamPlayer2D>("GetFlipSFX").PitchScale = peerPitchScale;
+        car2.GetNode<AudioStreamPlayer2D>("FlipSFX").PitchScale = peerPitchScale;
     }
 
     public void StartClient(string ipAddress)
@@ -158,6 +165,8 @@ public partial class TwoCarController : Node, INetEventListener
         manager = new NetManager(this);
         manager.Start();
         manager.Connect(ipAddress, port, connectionKey);
+        car1.GetNode<AudioStreamPlayer2D>("GetFlipSFX").PitchScale = peerPitchScale;
+        car1.GetNode<AudioStreamPlayer2D>("FlipSFX").PitchScale = peerPitchScale;
     }
 
 
