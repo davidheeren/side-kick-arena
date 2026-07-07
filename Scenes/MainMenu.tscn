@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c4hsmp1qnfo3l" path="res://Scripts/MainMenu.cs" id="1_tt5f1"]
 
-[node name="MainMenu" type="BoxContainer" unique_id=1230839309 node_paths=PackedStringArray("ipInput", "portInput", "joinButton", "hostButton")]
+[node name="MainMenu" type="BoxContainer" unique_id=1230839309 node_paths=PackedStringArray("ipInput", "joinButton", "hostButton", "singleplayerButton")]
 offset_left = -48.0
 offset_top = -64.0
 offset_right = 144.0
@@ -12,9 +12,9 @@ alignment = 1
 vertical = true
 script = ExtResource("1_tt5f1")
 ipInput = NodePath("IpSetting/LineEdit")
-portInput = NodePath("PortSetting/LineEdit")
 joinButton = NodePath("JoinButton")
 hostButton = NodePath("HostButton")
+singleplayerButton = NodePath("SingleplayerButton")
 
 [node name="IpSetting" type="BoxContainer" parent="." unique_id=934301612]
 layout_mode = 2
@@ -58,3 +58,11 @@ layout_mode = 2
 [node name="HostButton" type="Button" parent="." unique_id=55839272]
 layout_mode = 2
 text = "Host"
+
+[node name="Spacer2" type="Control" parent="." unique_id=73117112]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="SingleplayerButton" type="Button" parent="." unique_id=1833497717]
+layout_mode = 2
+text = "Single Player"

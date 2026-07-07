@@ -4,18 +4,19 @@ public partial class SingleCarController : Node
 {
     [Export] Car car;
 
+    public void Start()
+    {
+        PhysicsServer2D.SetActive(true);
+    }
+
     public override void _PhysicsProcess(double delta)
     {
         GD.PrintErr("Should not be using single car controller yet");
-        // Vector2 input = ProcessMoveInput(GetMoveInput());
-        Vector2 input = Vector2.Zero;
-        car.MoveHorizontal(input.X);
-        car.MoveVertical(input.Y);
-
-        // Flip dir normalized
+        Vector2 hostMoveInput = Car.LimitMoveInput(Car.GetMoveInput());
+        car.MoveHorizontal(hostMoveInput.X);
+        car.MoveVertical(hostMoveInput.Y);
         if (Input.IsActionJustPressed("flip"))
-            car.Flip(input.Normalized());
-
+            car.Flip(hostMoveInput.Normalized());
         car.UpdateCanFlip();
     }
 }

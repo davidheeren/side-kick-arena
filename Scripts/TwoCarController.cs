@@ -44,31 +44,6 @@ public partial class TwoCarController : Node, INetEventListener
         PhysicsServer2D.SetActive(false);
     }
 
-    private Vector2 GetMoveInput()
-    {
-        // Get non normalized input
-        // Y is flipped
-        Vector2 input;
-        input.X = Input.GetAxis("move_left", "move_right");
-        input.Y = Input.GetAxis("move_up", "move_down");
-        return input;
-    }
-
-    private Vector2 LimitMoveInput(Vector2 input)
-    {
-        float overDeadzone = 0.8f;
-        // Set input to max if abs over
-        if (input.X > overDeadzone)
-            input.X = 1;
-        else if (input.X < -overDeadzone)
-            input.X = -1;
-        if (input.Y > overDeadzone)
-            input.Y = 1;
-        else if (input.Y < -overDeadzone)
-            input.Y = -1;
-        return input;
-    }
-
     public override void _Process(double delta)
     {
         if (!isRunning)
@@ -121,7 +96,7 @@ public partial class TwoCarController : Node, INetEventListener
         if (isHost)
         {
             // Car 1
-            Vector2 hostMoveInput = LimitMoveInput(GetMoveInput());
+            Vector2 hostMoveInput = Car.LimitMoveInput(Car.GetMoveInput());
             car1.MoveHorizontal(hostMoveInput.X);
             car1.MoveVertical(hostMoveInput.Y);
             if (Input.IsActionJustPressed("flip"))
@@ -140,7 +115,7 @@ public partial class TwoCarController : Node, INetEventListener
         }
         else
         {
-            clientLastMove = LimitMoveInput(GetMoveInput());
+            clientLastMove = Car.LimitMoveInput(Car.GetMoveInput());
             // car2.MoveHorizontal(clientLastMove.X);
             // car2.MoveVertical(clientLastMove.Y);
 
@@ -208,7 +183,7 @@ public partial class TwoCarController : Node, INetEventListener
             if (inputPayload.flip > clientLastFlipTick)
                 clientShouldFlip = true;
             clientLastFlipTick = inputPayload.flip;
-            clientLastMove = LimitMoveInput(new Vector2(inputPayload.moveX, inputPayload.moveY));
+            clientLastMove = Car.LimitMoveInput(new Vector2(inputPayload.moveX, inputPayload.moveY));
         }
         else
         {

@@ -164,4 +164,29 @@ public partial class Car : RigidBody2D, IEntity
         Dictionary result = spaceState.IntersectRay(query);
         return result.Count > 0;
     }
+
+    public static Vector2 GetMoveInput()
+    {
+        // Get non normalized input
+        // Y is flipped
+        Vector2 input;
+        input.X = Input.GetAxis("move_left", "move_right");
+        input.Y = Input.GetAxis("move_up", "move_down");
+        return input;
+    }
+
+    public static Vector2 LimitMoveInput(Vector2 input)
+    {
+        float overDeadzone = 0.8f;
+        // Set input to max if abs over
+        if (input.X > overDeadzone)
+            input.X = 1;
+        else if (input.X < -overDeadzone)
+            input.X = -1;
+        if (input.Y > overDeadzone)
+            input.Y = 1;
+        else if (input.Y < -overDeadzone)
+            input.Y = -1;
+        return input;
+    }
 }

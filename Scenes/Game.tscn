@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b5xlo1f8khjc2" path="res://Scenes/Car.tscn" id="4_kldst"]
 [ext_resource type="Texture2D" uid="uid://c7qpaholii7ie" path="res://Sprites/Car2.png" id="5_7lihs"]
 [ext_resource type="PackedScene" uid="uid://dne7niitfj0lw" path="res://Scenes/MainMenu.tscn" id="5_b2bpf"]
+[ext_resource type="Script" uid="uid://btd1omdc28mxw" path="res://Scripts/SingleCarController.cs" id="6_fgofq"]
 
 [node name="Game" type="Node2D" unique_id=1425847158]
 
@@ -33,7 +34,13 @@ car1 = NodePath("../Car1")
 car2 = NodePath("../Car2")
 ball = NodePath("../Ball")
 
-[node name="MainMenu" parent="." unique_id=1230839309 node_paths=PackedStringArray("twoCarController") instance=ExtResource("5_b2bpf")]
+[node name="SingleCarController" type="Node" parent="." unique_id=1562943015 node_paths=PackedStringArray("car")]
+script = ExtResource("6_fgofq")
+car = NodePath("../Car1")
+
+[node name="MainMenu" parent="." unique_id=1230839309 node_paths=PackedStringArray("singleCarController", "twoCarController", "car2") instance=ExtResource("5_b2bpf")]
+singleCarController = NodePath("../SingleCarController")
 twoCarController = NodePath("../TwoCarController")
+car2 = NodePath("../Car2")
 
 [editable path="Car2"]
